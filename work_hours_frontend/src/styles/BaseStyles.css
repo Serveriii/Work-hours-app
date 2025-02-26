@@ -14,6 +14,14 @@
   height: 100vh;
 }
 
+.button {
+  background-color: #124197;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 5px;
+  border: none;
+}
+
 .main-header {
   color: white;
   font-size: 2.5rem;
@@ -52,4 +60,20 @@
 .hover-text:hover {
   color: rgb(255, 255, 255);
   cursor: pointer;
+}
+
+.form-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+.form-container input {
+  width: 50%;
+  padding: 10px;
+  margin: 5px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
 }

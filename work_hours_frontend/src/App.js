@@ -13,6 +13,12 @@ function App() {
         <h1 className="main-header">Work Log</h1>
         <h2
           className="sub-header hover-text"
+          onClick={() => setScreen("projects")}
+        >
+          Projects
+        </h2>
+        <h2
+          className="sub-header hover-text"
           onClick={() => setScreen("login")}
         >
           {" "}

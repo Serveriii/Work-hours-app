@@ -16,6 +16,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_26_075758) do
 
   create_table "projects", force: :cascade do |t|
     t.string "title"
+    t.string "description"
     t.boolean "project_done"
     t.float "work_amount"
     t.float "work_logged"
