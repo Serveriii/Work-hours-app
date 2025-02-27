@@ -16,7 +16,7 @@ export default function ProjectsScreen() {
         <div className="filter-item">
           <h2 className="body-text">Date</h2>
           <select
-            className="body-text"
+            className="body-text filter-select"
             onChange={(e) => setDateFilter(e.target.value)}
           >
             <option value="all">All</option>
@@ -29,7 +29,7 @@ export default function ProjectsScreen() {
         <div className="filter-item">
           <h2 className="body-text">Project</h2>
           <select
-            className="body-text"
+            className="body-text filter-select"
             onChange={(e) => setProjectFilter(e.target.value)}
           >
             <option value="all">All</option>
