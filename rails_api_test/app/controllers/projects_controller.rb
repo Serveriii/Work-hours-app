@@ -1,13 +1,15 @@
 class ProjectsController < ApplicationController
+  before_action :authenticate_user!
   rescue_from ActiveRecord::RecordNotFound, with: :record_not_found
 
   # GET /projects
   def index
     begin
-      projects = Project.all
+      projects = Project.order(created_at: :desc)
       render json: projects
     rescue => e
-      Rails.logger.error e.message
+      Rails.logger.error "Projects index error: #{e.message}"
+      Rails.logger.error e.backtrace.join("\n")
       render json: { error: 'Failed to fetch projects' }, status: :internal_server_error
     end
   end
@@ -60,10 +62,37 @@ class ProjectsController < ApplicationController
     end
   end
 
+  # PATCH/PUT /projects/:id/log_work
+  def log_work
+    begin
+      project = Project.find(params[:id])
+      new_work_logged = project.work_logged + params[:project][:work_logged].to_f
+      
+      if project.update(
+        work_logged: new_work_logged,
+        work_type: params[:project][:work_type]
+      )
+        render json: project
+      else
+        render json: { errors: project.errors.full_messages }, status: :unprocessable_entity
+      end
+    rescue => e
+      Rails.logger.error e.message
+      render json: { error: 'Failed to log work' }, status: :internal_server_error
+    end
+  end
+
   private
 
   def project_params
-    params.require(:project).permit(:title, :description, :project_done, :work_amount, :work_logged)
+    params.require(:project).permit(
+      :title, 
+      :description, 
+      :project_done, 
+      :work_amount, 
+      :work_logged,
+      :work_type
+    )
   end
 
   def record_not_found

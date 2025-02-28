@@ -14,3 +14,98 @@
   justify-content: center;
   font-size: 16px;
 }
+
+.project-list-container {
+  max-height: 70vh;
+  overflow-y: auto;
+  padding: 10px;
+  border-radius: 8px;
+  margin-top: 20px;
+}
+
+.project-list-item {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  position: relative;
+  padding: 10px;
+  margin: 10px 0;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: rgb(204, 239, 255);
+}
+
+.work-amount {
+  font-weight: bold;
+  font-family: "Oswald", serif;
+  font-size: 1.5rem;
+}
+
+.work-logged {
+  font-weight: bold;
+  font-family: "Oswald", serif;
+  font-size: 1.5rem;
+}
+
+.work-amount-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.work-amount-item {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  margin: 10px;
+  padding: 5px;
+  border: 1px solid #7b9aff;
+  border-radius: 4px;
+}
+
+.work-input {
+  width: 20%;
+  padding: 5px;
+  border: 1px solid #7b9aff;
+  border-radius: 4px;
+  margin-bottom: 10px;
+  text-align: center;
+  font-size: 0.8rem;
+}
+
+.work-type-select {
+  width: 80%;
+  padding: 5px;
+  border: 1px solid #7b9aff;
+  border-radius: 4px;
+  margin-bottom: 10px;
+}
+
+.work-input-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Custom scrollbar styling */
+div::-webkit-scrollbar {
+  width: 8px;
+}
+
+div::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+div::-webkit-scrollbar-thumb {
+  background: #0539a8;
+  border-radius: 4px;
+}
+
+div::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}

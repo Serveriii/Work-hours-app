@@ -3,13 +3,16 @@ import "../styles/BaseStyles.css";
 import "../styles/ProjectsScreen.css";
 import ProjectList from "../components/ProjectList";
 
+export default function ProjectsScreen(user) {
+  const [dateFilter, setDateFilter] = useState("all");
+  const [projectFilter, setProjectFilter] = useState("all");
+  const [userFilter, setUserFilter] = useState("all");
 
-export default function ProjectsScreen() {
-      const [dateFilter, setDateFilter] = useState("all");
-      const [projectFilter, setProjectFilter] = useState("all");
-      const [userFilter, setUserFilter] = useState("all");
+  console.log(user);
+  if (!user) {
+    return <div>Loading...</div>;
+  }
 
-    
   return (
     <>
       <div className="filter-container">
@@ -39,8 +42,7 @@ export default function ProjectsScreen() {
           </select>
         </div>
       </div>
-      <ProjectList dateFilter={dateFilter} projectFilter={projectFilter} />
+      <ProjectList user={user.user} />
     </>
   );
 }
-

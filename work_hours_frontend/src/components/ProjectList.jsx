@@ -1,15 +1,17 @@
 import React, { useState, useEffect } from "react";
 import * as apiFunctions from "../functions/apiFunctions";
 import "../styles/ProjectListStyles.css";
+import ProjectListItem from "./ProjectListItem";
 
-export default function ProjectList(dateFilter, projectFilter) {
+export default function ProjectList({ user }) {
   const [projects, setProjects] = useState([]);
-  const [isAdmin, setIsAdmin] = useState(true);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [work_amount, setWorkAmount] = useState();
+  const [work_amount, setWorkAmount] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
+
+  
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -53,6 +55,10 @@ export default function ProjectList(dateFilter, projectFilter) {
     }
   };
 
+  const handleProjectUpdate = (updatedProjects) => {
+    setProjects(updatedProjects);
+  };
+
   useEffect(() => {
     const fetchProjects = async () => {
       try {
@@ -65,9 +71,13 @@ export default function ProjectList(dateFilter, projectFilter) {
     fetchProjects();
   }, []);
 
+  if (!user) {
+    return <div>Loading user data...</div>;
+  }
+
   return (
     <div>
-      {isAdmin && (
+      {Boolean(user.admin) && (
         <div>
           <h2 className="sub-header">Add Project</h2>
           <form className="form-container" onSubmit={handleSubmit}>
@@ -86,7 +96,7 @@ export default function ProjectList(dateFilter, projectFilter) {
             <input
               type="number"
               value={work_amount}
-              placeholder="Work Amount"
+              placeholder="Planned work hours"
               onChange={(e) => setWorkAmount(e.target.value)}
             />
             <button className="button" type="submit">
@@ -95,29 +105,17 @@ export default function ProjectList(dateFilter, projectFilter) {
           </form>
         </div>
       )}
-      {projects.map((project) => (
-        <div
-          key={project.id}
-          style={{
-            position: "relative",
-            padding: "10px",
-            margin: "10px 0",
-            border: "1px solid #ccc",
-            borderRadius: "4px",
-          }}
-        >
-          <button
-            className="delete-button"
-            onClick={() => handleDelete(project.id)}
-          >
-            x
-          </button>
-          <h2>{project.title}</h2>
-          <p>{project.description}</p>
-          <p>Work Amount: {project.work_amount}</p>
-          <p>Work Logged: {project.work_logged}</p>
-        </div>
-      ))}
+      <div className="project-list-container">
+        {projects.map((project) => (
+          <ProjectListItem
+            key={project.id}
+            project={project}
+            handleDelete={handleDelete}
+            adminStatus={user.user?.admin}
+            onProjectUpdate={handleProjectUpdate}
+          />
+        ))}
+      </div>
     </div>
   );
 }

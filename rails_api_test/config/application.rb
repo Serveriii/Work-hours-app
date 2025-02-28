@@ -28,5 +28,12 @@ module TestApi
     # Middleware like session, flash, cookies can be added back manually.
     # Skip views, helpers and assets when generating a new resource.
     config.api_only = true
+
+    # Enable session middleware
+    config.middleware.use ActionDispatch::Session::CookieStore
+    config.middleware.use ActionDispatch::Cookies
+    
+    # Configure session store
+    config.session_store :cookie_store, key: '_rails_api_test_session'
   end
 end
