@@ -5,8 +5,11 @@ class ProjectsController < ApplicationController
   # GET /projects
   def index
     begin
+      Rails.logger.info "Authorization header: #{request.headers['Authorization']}"  # Debug log
+      Rails.logger.info "Current user ID: #{@current_user_id}"  # Debug log
+      
       projects = Project.order(created_at: :desc)
-      render json: projects
+      render json: projects, status: :ok
     rescue => e
       Rails.logger.error "Projects index error: #{e.message}"
       Rails.logger.error e.backtrace.join("\n")

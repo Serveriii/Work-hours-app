@@ -7,17 +7,30 @@ const api = axios.create({
   baseURL: API_URL,
   headers: {
     "Content-Type": "application/json",
+    Accept: "application/json",
   },
 });
 
-// Add interceptor to add token to all requests
-api.interceptors.request.use((config) => {
-  const token = localStorage.getItem("token");
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
+// Add request interceptor
+api.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem("token");
+    console.log("Token from localStorage:", token); // Debug log
+
+    if (token) {
+      // Don't modify the token if it already includes 'Bearer'
+      config.headers.Authorization = token.startsWith("Bearer ")
+        ? token
+        : `Bearer ${token}`;
+      console.log("Final Authorization header:", config.headers.Authorization); // Debug log
+    }
+    return config;
+  },
+  (error) => {
+    console.error("Request interceptor error:", error);
+    return Promise.reject(error);
   }
-  return config;
-});
+);
 
 // Update your existing API functions to handle unauthorized responses
 const handleUnauthorized = (error) => {
@@ -30,14 +43,15 @@ const handleUnauthorized = (error) => {
 
 export const getProjects = async () => {
   try {
+    const token = localStorage.getItem("token");
+    console.log("Making projects request with token:", token); // Debug log
+
     const response = await api.get("/projects");
     return response.data;
   } catch (error) {
     console.error("Error fetching projects:", error);
-    if (error.response?.status === 401) {
-      // Handle unauthorized access
-      localStorage.removeItem("token");
-      window.location.href = "/";
+    if (error.response) {
+      console.log("Error response:", error.response.data); // Debug response data
     }
     throw error;
   }

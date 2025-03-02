@@ -11,12 +11,17 @@ export const login = async (email, password) => {
       },
     });
 
-    // Get the token from the Authorization header
+    console.log("Response headers:", response.headers); // Debug headers
+    console.log("Authorization header:", response.headers.authorization); // Debug token
+
     const token = response.headers.authorization;
     if (token) {
       localStorage.setItem("token", token);
       // Set default Authorization header for future requests
       axios.defaults.headers.common["Authorization"] = token;
+      console.log("Token stored:", localStorage.getItem("token")); // Debug stored token
+    } else {
+      console.warn("No token received in response");
     }
 
     return response.data;

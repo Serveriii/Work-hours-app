@@ -3,15 +3,22 @@ import * as apiFunctions from "../functions/apiFunctions";
 import "../styles/ProjectListStyles.css";
 import ProjectListItem from "./ProjectListItem";
 
-export default function ProjectList({ user }) {
-  const [projects, setProjects] = useState([]);
+export default function ProjectList({ user, projects, projectFilter }) {
+  const [filteredProjects, setFilteredProjects] = useState([]);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [work_amount, setWorkAmount] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  
+
+  useEffect(() => {
+    if (projectFilter === "all") {
+      setFilteredProjects(projects);
+    } else {
+      setFilteredProjects(projects.filter((project) => project.title === projectFilter));
+    }
+  }, [projectFilter]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -29,7 +36,7 @@ export default function ProjectList({ user }) {
       setDescription("");
       setWorkAmount("");
       const updatedProjects = await apiFunctions.getProjects();
-      setProjects(updatedProjects);
+      setFilteredProjects(updatedProjects);
     } catch (error) {
       setError("Failed to create project");
       console.error("Error submitting project:", error);
@@ -45,7 +52,7 @@ export default function ProjectList({ user }) {
       try {
         await apiFunctions.deleteProject(id);
         const updatedProjects = await apiFunctions.getProjects();
-        setProjects(updatedProjects);
+        setFilteredProjects(updatedProjects);
       } catch (error) {
         setError("Failed to delete project");
         console.error("Error deleting project:", error);
@@ -56,20 +63,9 @@ export default function ProjectList({ user }) {
   };
 
   const handleProjectUpdate = (updatedProjects) => {
-    setProjects(updatedProjects);
+    setFilteredProjects(updatedProjects);
   };
 
-  useEffect(() => {
-    const fetchProjects = async () => {
-      try {
-        const projects = await apiFunctions.getProjects();
-        setProjects(projects);
-      } catch (error) {
-        console.error("Error fetching projects:", error);
-      }
-    };
-    fetchProjects();
-  }, []);
 
   if (!user) {
     return <div>Loading user data...</div>;
@@ -106,12 +102,12 @@ export default function ProjectList({ user }) {
         </div>
       )}
       <div className="project-list-container">
-        {projects.map((project) => (
+        {filteredProjects.map((project) => (
           <ProjectListItem
             key={project.id}
             project={project}
             handleDelete={handleDelete}
-            adminStatus={user.user?.admin}
+            adminStatus={user.admin}
             onProjectUpdate={handleProjectUpdate}
           />
         ))}
