@@ -7,6 +7,7 @@ Rails.application.routes.draw do
   resources :projects do
     member do
       put 'log_work'
+      put 'update_work_amount'
     end
   end
 end

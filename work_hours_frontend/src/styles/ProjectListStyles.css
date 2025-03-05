@@ -58,12 +58,41 @@
 .work-amount-item {
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: space-evenly;
   align-items: center;
+  height: 120px;
   margin: 10px;
-  padding: 5px;
   border: 1px solid #7b9aff;
   border-radius: 4px;
+}
+
+.work-amount-item p {
+  text-align: center;
+}
+
+.work-amount-item-arrow {
+  cursor: pointer;
+  padding: 5px;
+  position: relative;
+  width: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.work-amount-item-arrow-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  width: 85%;
+}
+
+.work-amount-item-arrow-container p {
+  width: 120px;
+  text-align: center;
+  margin: 0;
+  white-space: nowrap;
 }
 
 .work-input {

@@ -1,5 +1,15 @@
 import React, { useState } from "react";
-import { updateWorkLogged, getProjects } from "../functions/apiFunctions";
+import { updateWorkLogged, updateWorkAmount } from "../functions/apiFunctions";
+import ArrowLeftIcon from "@mui/icons-material/ArrowLeft";
+import ArrowRightIcon from "@mui/icons-material/ArrowRight";
+
+const selectableWorkTypes = [
+  "All",
+  "Development",
+  "Design",
+  "Research",
+  "Other",
+];
 
 export default function ProjectListItem({
   project,
@@ -9,31 +19,60 @@ export default function ProjectListItem({
 }) {
   const [new_work_logged, setNewWorkLogged] = useState("");
   const [work_type, setWorkType] = useState("development");
+  const [workTypeList, setWorkTypeList] = useState(selectableWorkTypes);
+  const [workTypeIndex, setWorkTypeIndex] = useState(0);
   const [error, setError] = useState(null);
   const [localWorkLogged, setLocalWorkLogged] = useState(project.work_logged);
 
-  const handleWorkLogSubmit = async () => {
-    if (!new_work_logged || isNaN(parseFloat(new_work_logged))) {
-      setError("Please enter a valid number of hours");
-      return;
+  const handleArrowClick = (arrowDirection) => {
+    if (arrowDirection === "left" && workTypeIndex > 0) {
+      setWorkTypeIndex(workTypeIndex - 1);
+    } else if (
+      arrowDirection === "right" &&
+      workTypeIndex < workTypeList.length - 1
+    ) {
+      setWorkTypeIndex(workTypeIndex + 1);
     }
+  };
 
-    const newTotal = localWorkLogged + parseFloat(new_work_logged);
-    setLocalWorkLogged(newTotal);
-    setNewWorkLogged("");
+  const getCurrentWorkAmount = () => {
+    const workType = workTypeList[workTypeIndex].toLowerCase();
+    return workType === "all"
+      ? project.work_amount_total
+      : project[`work_amount_${workType}`] || 0;
+  };
 
+  const handleWorkLogSubmit = async () => {
     try {
+      const amount = parseFloat(new_work_logged);
+      if (isNaN(amount) || amount < 0) {
+        setError("Please enter a valid number");
+        return;
+      }
+
+      // Update both work logged and work amount for the specific type
       await updateWorkLogged(project.id, {
-        work_logged: parseFloat(new_work_logged),
+        work_logged: amount,
         work_type: work_type,
       });
 
-      const updatedProjects = await getProjects();
-      onProjectUpdate(updatedProjects);
+      // Update the work amount for the specific type
+      const updatedProject = await updateWorkAmount(
+        project.id,
+        work_type,
+        getCurrentWorkAmount() + amount
+      );
+
+      setLocalWorkLogged(updatedProject.work_logged);
+      setNewWorkLogged("");
+      setError(null);
+
+      if (onProjectUpdate) {
+        onProjectUpdate(updatedProject);
+      }
     } catch (error) {
-      setLocalWorkLogged(project.work_logged);
+      console.error("Error updating work:", error);
       setError("Failed to update work logged");
-      console.error("Error updating work logged:", error);
     }
   };
 
@@ -42,8 +81,6 @@ export default function ProjectListItem({
     month: "long",
     day: "numeric",
   });
-
-
 
   return (
     <div className="project-list-item">
@@ -65,7 +102,24 @@ export default function ProjectListItem({
         </div>
         <div className="work-amount-item">
           <p>Work done so far</p>
-          <p className="work-logged">{localWorkLogged}</p>
+          <div className="work-amount-item-arrow-container">
+            <div className="work-amount-item-arrow">
+              <ArrowLeftIcon
+                fontSize="large"
+                color="primary"
+                onClick={() => handleArrowClick("left")}
+              />
+            </div>
+            <p>{workTypeList[workTypeIndex]}</p>
+            <div className="work-amount-item-arrow">
+              <ArrowRightIcon
+                fontSize="large"
+                color="primary"
+                onClick={() => handleArrowClick("right")}
+              />
+            </div>
+          </div>
+          <p className="work-logged">{getCurrentWorkAmount()}</p>
         </div>
       </div>
       <div className="work-input-container">

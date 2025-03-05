@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_02_28_174554) do
+ActiveRecord::Schema[8.0].define(version: 2025_03_05_123915) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -30,6 +30,16 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_28_174554) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "work_type", default: "development"
+    t.float "work_amount_development", default: 0.0
+    t.float "work_amount_design", default: 0.0
+    t.float "work_amount_research", default: 0.0
+    t.float "work_amount_other", default: 0.0
+    t.float "work_amount_total", default: 0.0
+    t.index ["work_amount_design"], name: "index_projects_on_work_amount_design"
+    t.index ["work_amount_development"], name: "index_projects_on_work_amount_development"
+    t.index ["work_amount_other"], name: "index_projects_on_work_amount_other"
+    t.index ["work_amount_research"], name: "index_projects_on_work_amount_research"
+    t.index ["work_amount_total"], name: "index_projects_on_work_amount_total"
     t.index ["work_type"], name: "index_projects_on_work_type"
   end
 

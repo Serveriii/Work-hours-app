@@ -104,3 +104,19 @@ export const deleteProject = async (id) => {
     throw error;
   }
 };
+
+export const updateWorkAmount = async (projectId, workType, amount) => {
+  try {
+    const response = await api.put(
+      `${API_URL}/projects/${projectId}/update_work_amount`,
+      {
+        work_type: workType,
+        amount: amount,
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error(`Error updating ${workType} amount:`, error);
+    throw error;
+  }
+};

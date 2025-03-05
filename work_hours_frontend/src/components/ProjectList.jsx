@@ -11,14 +11,23 @@ export default function ProjectList({ user, projects, projectFilter }) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
 
+  console.log(projects, filteredProjects);
 
   useEffect(() => {
-    if (projectFilter === "all") {
-      setFilteredProjects(projects);
+    // Ensure projects is an array before filtering
+    if (Array.isArray(projects)) {
+      if (projectFilter === "all") {
+        setFilteredProjects(projects);
+      } else {
+        setFilteredProjects(
+          projects.filter((project) => project.title === projectFilter)
+        );
+      }
     } else {
-      setFilteredProjects(projects.filter((project) => project.title === projectFilter));
+      console.error("Projects is not an array:", projects);
+      setFilteredProjects([]); // Set empty array as fallback
     }
-  }, [projectFilter]);
+  }, [projectFilter, projects]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -31,12 +40,19 @@ export default function ProjectList({ user, projects, projectFilter }) {
         project_done: false,
         work_amount: parseFloat(work_amount) || 0,
         work_logged: 0,
+        work_amount_development: 0,
+        work_amount_design: 0,
+        work_amount_research: 0,
+        work_amount_other: 0,
+        work_amount_total: 0,
       });
       setTitle("");
       setDescription("");
       setWorkAmount("");
       const updatedProjects = await apiFunctions.getProjects();
-      setFilteredProjects(updatedProjects);
+      setFilteredProjects(
+        Array.isArray(updatedProjects) ? updatedProjects : []
+      );
     } catch (error) {
       setError("Failed to create project");
       console.error("Error submitting project:", error);
@@ -52,7 +68,9 @@ export default function ProjectList({ user, projects, projectFilter }) {
       try {
         await apiFunctions.deleteProject(id);
         const updatedProjects = await apiFunctions.getProjects();
-        setFilteredProjects(updatedProjects);
+        setFilteredProjects(
+          Array.isArray(updatedProjects) ? updatedProjects : []
+        );
       } catch (error) {
         setError("Failed to delete project");
         console.error("Error deleting project:", error);
@@ -62,10 +80,16 @@ export default function ProjectList({ user, projects, projectFilter }) {
     }
   };
 
-  const handleProjectUpdate = (updatedProjects) => {
-    setFilteredProjects(updatedProjects);
-  };
+  const handleProjectUpdate = (updatedProject) => {
+    // Update the specific project in the filtered projects array
+    setFilteredProjects((prevProjects) => {
+      if (!Array.isArray(prevProjects)) return [];
 
+      return prevProjects.map((project) =>
+        project.id === updatedProject.id ? updatedProject : project
+      );
+    });
+  };
 
   if (!user) {
     return <div>Loading user data...</div>;
@@ -73,7 +97,7 @@ export default function ProjectList({ user, projects, projectFilter }) {
 
   return (
     <div>
-      {Boolean(user.admin) && (
+      {user.admin && (
         <div>
           <h2 className="sub-header">Add Project</h2>
           <form className="form-container" onSubmit={handleSubmit}>
@@ -102,15 +126,16 @@ export default function ProjectList({ user, projects, projectFilter }) {
         </div>
       )}
       <div className="project-list-container">
-        {filteredProjects.map((project) => (
-          <ProjectListItem
-            key={project.id}
-            project={project}
-            handleDelete={handleDelete}
-            adminStatus={user.admin}
-            onProjectUpdate={handleProjectUpdate}
-          />
-        ))}
+        {Array.isArray(filteredProjects) &&
+          filteredProjects.map((project) => (
+            <ProjectListItem
+              key={project.id}
+              project={project}
+              handleDelete={handleDelete}
+              adminStatus={user.user?.admin}
+              onProjectUpdate={handleProjectUpdate}
+            />
+          ))}
       </div>
     </div>
   );
