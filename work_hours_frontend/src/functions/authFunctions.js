@@ -1,48 +1,54 @@
 import axios from "axios";
 
-const API_URL = "http://localhost:3000";
+const API_URL = process.env.REACT_APP_API_URL || "http://localhost:3000";
+const AUTH_TOKEN_KEY = "token";
+
+const api = axios.create({
+  baseURL: API_URL,
+  headers: {
+    "Content-Type": "application/json",
+  },
+});
+
+export const getStoredToken = () => localStorage.getItem(AUTH_TOKEN_KEY);
+
+export const setAuthToken = (token) => {
+  if (token) {
+    localStorage.setItem(AUTH_TOKEN_KEY, token);
+    api.defaults.headers.common["Authorization"] = token;
+  } else {
+    localStorage.removeItem(AUTH_TOKEN_KEY);
+    delete api.defaults.headers.common["Authorization"];
+  }
+};
 
 export const login = async (email, password) => {
   try {
-    const response = await axios.post(`${API_URL}/users/sign_in`, {
-      user: {
-        email,
-        password,
-      },
+    const response = await api.post("/users/sign_in", {
+      user: { email, password },
     });
 
-    console.log("Response headers:", response.headers); // Debug headers
-    console.log("Authorization header:", response.headers.authorization); // Debug token
-
     const token = response.headers.authorization;
-    if (token) {
-      localStorage.setItem("token", token);
-      // Set default Authorization header for future requests
-      axios.defaults.headers.common["Authorization"] = token;
-      console.log("Token stored:", localStorage.getItem("token")); // Debug stored token
-    } else {
-      console.warn("No token received in response");
+    if (!token) {
+      throw new Error("No authentication token received");
     }
 
+    setAuthToken(token);
     return response.data;
   } catch (error) {
-    console.error("Login error:", error);
-    throw error;
+    console.error("Login error:", error.message);
+    throw new Error(error.response?.data?.message || "Login failed");
   }
 };
 
 export const logout = async () => {
-  const token = localStorage.getItem("token");
   try {
-    await axios.delete(`${API_URL}/users/sign_out`, {
-      headers: {
-        Authorization: token,
-      },
-    });
+    await api.delete("/users/sign_out");
   } catch (error) {
-    console.error("Logout error:", error);
+    console.error("Logout error:", error.message);
   } finally {
-    localStorage.removeItem("token");
-    delete axios.defaults.headers.common["Authorization"];
+    setAuthToken(null);
   }
 };
+
+export default api;

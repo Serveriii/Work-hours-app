@@ -11,8 +11,6 @@ export default function ProjectList({ user, projects, projectFilter }) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  console.log(projects, filteredProjects);
-
   useEffect(() => {
     // Ensure projects is an array before filtering
     if (Array.isArray(projects)) {
@@ -46,9 +44,7 @@ export default function ProjectList({ user, projects, projectFilter }) {
         work_amount_other: 0,
         work_amount_total: 0,
       });
-      setTitle("");
-      setDescription("");
-      setWorkAmount("");
+
       const updatedProjects = await apiFunctions.getProjects();
       setFilteredProjects(
         Array.isArray(updatedProjects) ? updatedProjects : []
@@ -58,6 +54,9 @@ export default function ProjectList({ user, projects, projectFilter }) {
       console.error("Error submitting project:", error);
     } finally {
       setIsLoading(false);
+      setTitle("");
+      setDescription("");
+      setWorkAmount("");
     }
   };
 
@@ -132,7 +131,7 @@ export default function ProjectList({ user, projects, projectFilter }) {
               key={project.id}
               project={project}
               handleDelete={handleDelete}
-              adminStatus={user.user?.admin}
+              adminStatus={user.admin}
               onProjectUpdate={handleProjectUpdate}
             />
           ))}

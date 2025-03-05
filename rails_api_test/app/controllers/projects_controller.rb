@@ -113,8 +113,9 @@ class ProjectsController < ApplicationController
   def project_params
     params.require(:project).permit(
       :title, 
-      :description, 
-      :project_done, 
+      :description,
+      :work_amount,
+      :project_done,
       :work_logged,
       :work_type,
       :work_amount_development,
