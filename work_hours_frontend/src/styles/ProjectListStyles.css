@@ -138,3 +138,23 @@ div::-webkit-scrollbar-thumb {
 div::-webkit-scrollbar-thumb:hover {
   background: #555;
 }
+
+
+@media screen and (max-width: 2000px) {
+  .project-list-container {
+    max-height: 90vh;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-evenly;
+  }
+  .project-list-item {
+    width: 30%;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .project-list-container {
+    max-height: 70vh;
+  }
+}
